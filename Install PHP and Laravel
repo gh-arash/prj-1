@@ -1,0 +1,12 @@
+1- Server requirements: PHP, a local server software. 
+
+   - Install XAMPP (to create a local server and local IP) and Download PHP.
+   
+2- Install Composer (a dependency manager to install different packages such as laravel)
+   * we can download different packages from packagist.org
+
+3- run this command on terminal to create a new laravel project:
+   composer create-project --prefer-dist laravel/laravel project_name
+
+4- Local Development Server: we can use command : php artisan serve to create a local server 
+   another way is start apache and mysql in XAMMP.
