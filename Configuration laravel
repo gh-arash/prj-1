@@ -1,0 +1,49 @@
+5- Configuration: web server's document/ web root >>> public directory
+   // index.php in this directory hosts all http requests entering in the application. 
+   
+6- set current environment (local/production) >>> .env file -> APP_ENV KEY
+   // in the .env we can use strings having space between them inside " ". 
+
+   // we can set environment value using this facade:
+   if (App::environment('local')) {
+   // The environment is local
+      }
+   if (App::environment(['local', 'staging'])) {
+   // The environment is either local OR staging...
+      }
+
+7- HIDING Environment Variables From Debug Pages:
+   In some cases you may want to obscure certain variables. 
+   You may do this by updating the debug_blacklist option in your config/app.php configuration file
+   
+   return [
+    // ...
+    'debug_blacklist' => [
+        '_ENV' => [
+            'APP_KEY',
+            'DB_PASSWORD',],
+        '_SERVER' => [
+            'APP_KEY',
+            'DB_PASSWORD',],
+        '_POST' => 
+        [
+            'password',],],];
+
+8- Accessing Configuration Values:
+   using the global config helper function 
+   $value = config('app.timezone');               // use default value of config option setted in the config file. 
+   config(['app.timezone' => 'America/Chicago']); // set configuration values at runtime
+   
+ 9- Configuration Caching: should read carfully later in link below
+    // https://laravel.com/docs/7.x/configuration#configuration-caching
+ 10- maintenance mode: 
+https://laravel.com/docs/7.x/configuration#maintenance-mode
+
+11- folder config > app.php include below configurations:
+   APP_NAME --- APP_ENV --- APP_DEBUG (to determine whether detailed error  or simple error will be shown)---
+   APP_URL --- ASSET_URL --- timezone --- locale (to determine which locale will be used by translation service provider) ---
+   APP_KEY --- providers (including laravel framework, packages and application service providers) ---
+   aliases (Facades classes)
+   
+   // auth.php config file can be useful for situation that we have multiple users types and tables and models. 
+   // filesystems.php config can be set to store data uploaded in the application
