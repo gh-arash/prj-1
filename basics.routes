@@ -1,0 +1,89 @@
+1- default routes files: two files in the routes folder contains routes.
+   ONE: web.php (contain routes for HTTP requests).These routes are assigned the web middleware group, which provides features like
+   session state and CSRF protection. 
+   TWO: api.php (for other type requests). these routes are stateless and are assigned the api middleware group.
+   // the /api URI prefix is automatically applied so you do not need to manually apply it to every route in the file.
+   // You may modify the prefix and other route group options by modifying your RouteServiceProvider class.
+   
+2- define url in browser -> get access to the defined route  (routes are loaded by RoutesServiceProvider class)
+
+3- Available Router Methods: Route::get($uri, $callback);post,put,patch,delete,options
+   MORE OPTION: 
+      Route::match(['get', 'post'], '/', function () {}); >>>  register a route that responds to multiple HTTP verbs.
+      Route::any('/', function () {}); >>>                     register a route that responds to all HTTP verbs
+      
+4- CSRF Protection
+   Any HTML forms pointing to POST, PUT, PATCH, or DELETE routes that are defined in the web routes file should include a CSRF token field.
+   Otherwise, the request will be rejected.
+   
+5- Redirect Routes: to redirect the route to another URI >>>  Route::redirect (which return a 302 (HTTP_FOUND) status code)
+   // Route::permanentRedirect method to return a 301 (HTTP_MOVED_PERMANENTLY) status code:
+   // Route::view >>> If your route only needs to return a view, you may use the . 
+
+6- defining route parameters to capture segments of the URI within the route.
+   example 1: Route::get('user/{id}', function ($id) {return 'User '.$id;});
+   example 2: Route::get('posts/{post}/comments/{comment}', function ($postId, $commentId) {});
+   
+   // Route parameters are always encased within {} braces and should consist of alphabetic characters, 
+      and may not contain a - character. Instead of using the - character, use an underscore (_).
+      Route parameters are injected into route controllers based on their order. the names of the controller arguments
+      ($postId, $commentId, $id) do not matter.
+ 7- OPTIONAL PARAMETERS >>> by placing a ? mark after the parameter name. (with  the route's corresponding variable a default value)
+    Route::get('user/{name?}', function ($name = null) {//});
+ 
+ 8- Regular Expression Constraints >>> Route::get('user/{id}/{name}', function ($id, $name) {//})
+    ->where(['id' => '[0-9]+', 'name' => '[a-z]+']);
+    
+    // Global Constraints: use Route::pattern (define these patterns) in the boot method of the RouteServiceProvider
+ 9- Named Routes: Route::get('user/profile', 'UserProfileController@show')->name('profile'); (Route names should always be unique)    
+ 
+ 10- Generating URLs/redirects To Named Routes  via the global route function: 
+     return redirect()->route('profile');
+     // If the named route defines parameters, you may pass the parameters as the second argument to the route function:
+     Route::get('user/{id}/profile', function ($id){}->name('profile');
+     $url = route('profile', ['id' => 1]);
+     // If you pass additional parameters in the array, those key / value pairs will automatically be added to the generated URL's
+     query string:
+      $url = route('profile', ['id' => 1, 'photos' => 'yes']); (/user/1/profile?photos=yes)
+      
+  11- Inspecting The Current Route: use the named method on a Route instance:
+      if ($request->route()->named('profile')) {
+
+  12- Route groups allow you to share route attributes, such as middleware or namespaces
+  12-1 middleware: 
+   Route::middleware(['first', 'second'])->group(function () {
+    Route::get('/', function () {});
+    Route::get('user/profile', function () {});});
+   12-2 Route Prefixes:
+    Route::prefix('admin')->group(function () {
+    Route::get('users', function () {// Matches The "/admin/users" URL});});
+   // route name prefix is similar to above. 
+      Route::name('admin.')->group(function () ...
+   
+   13- Route Model Binding: using this, instead of injecting a user's ID, you can inject the entire User model instance that
+       matches the given ID.
+       Laravel automatically resolves Eloquent models defined in routes or controller actions whose type-hinted variable names
+       match a route segment name:
+       Route::get('api/users/{user}', function (App\User $user) {...});
+   13-1 Customizing The Key:
+   Route::get('api/posts/{post:slug}', function (App\Post $post) {...});
+   MORE OPTIONS >>> read documentation
+   
+   14- Fallback Routes: to define a route that will be executed when no other route matches the incoming request.
+   Route::fallback(function () {...});
+   
+   15- Rate Limiting: The throttle middleware accepts two parameters that determine the maximum number of requests that
+       can be made in a given number of minutes. it has more OPTIONS to read. 
+       
+   16- HTML forms do not support PUT, PATCH or DELETE actions. So, when defining PUT, PATCH or DELETE routes that are called
+   from an HTML form, so use the @method Blade directive to generate the _method input:
+   <form action="/foo/bar" method="POST">
+    @method('PUT')
+    @csrf form>
+   
+   17- Accessing The Current Route:
+       $route = Route::current();
+       $name = Route::currentRouteName();
+       $action = Route::currentRouteAction();
+   
+   
