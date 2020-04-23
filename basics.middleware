@@ -1,0 +1,44 @@
+Middleware provide a convenient mechanism for filtering HTTP requests entering your application.
+
+1- Defining Middleware: php artisan make:middleware CheckAge (new CheckAge class within your app/Http/Middleware directory.)
+  // more detail in documentation
+2- middleware tasks coulde be perfom after the request is handled by the application. 
+
+3- Registering Middleware:
+3-1 Global Middleware: If you want a middleware to run during every HTTP request to your application,
+    list the middleware class in the $middleware property of your app/Http/Kernel.php class.
+    
+3-2- assign middleware to specific routes,  you should first assign the middleware a key in your app/Http/Kernel.php file. like so:
+     'auth' => \App\Http\Middleware\Authenticate::class
+     // in the basics.routes it could be find, how to add a middleware to a given route.
+     // ->withoutMiddleware(); >>> to apply a middleware on a group routes with some exception routes. 
+    
+3-3- Middleware Groups: Sometimes you may want to group several middleware under a single key to make them easier to assign to routes.
+     You may do this using the $middlewareGroups property of your HTTP kernel.
+     // Out of the box, Laravel comes with web and api middleware groups that contain
+     // common middleware you may want to apply to your web UI and API routes:
+ 
+ 3-4- Sorting Middleware: rarely used to execute middleware in a specific order >>>  $middlewarePriority in the app/Http/Kernel.php file
+ 
+ 
+ 3-5- Middleware parameters may be specified when defining the route by separating the middleware name and parameters with a:. 
+      Multiple parameters should be delimited by commas:
+     Route::put('post/{id}', function ($id) {
+     //
+     })->middleware('role:editor');
+     
+     
+  3-6- Terminable Middleware
+  Sometimes a middleware may need to do some work after the HTTP response has been sent to the browser.
+  If you define a terminate method on your middleware and your web server is using FastCGI, the terminate
+  method will automatically be called after the response is sent to the browser:
+
+  <?php
+  namespace Illuminate\Session\Middleware;
+  use Closure;
+  class StartSession
+  {
+      public function handle($request, Closure $next)
+      {return $next($request);}
+      public function terminate($request, $response)
+      {// Store the session data...}}
