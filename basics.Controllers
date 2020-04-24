@@ -1,0 +1,71 @@
+Controllers can group related request handling logic into a single class Instead of defining all of them as Closures in route files.
+
+1- f you choose to nest your controllers deeper into the App\Http\Controllers directory, use the specific class name relative
+   to the App\Http\Controllers root namespace.
+   // if your full controller class is App\Http\Controllers\Photos\AdminController
+   // Route::get('foo', 'Photos\AdminController@method');
+   
+2- Single Action Controllers: If you would like to define a controller that only handles a single action, you may place a
+   single __invoke method on the controller
+   // Route::get('user/{id}', 'ShowProfile');
+   // php artisan make:controller ShowProfile --invokable
+   
+ 3- Controller Middleware: Using the middleware method from your controller's constructor, you may easily assign middleware to the
+    controller's action. Middlewares may restricts to specific method of the controllers. 
+    class UserController extends Controller
+{public function __construct(){
+        $this->middleware('auth');
+        $this->middleware('log')->only('index');
+        $this->middleware('subscribed')->except('store');}}
+ 
+ 4- Resource Controllers: 
+    php artisan make:controller PhotoController --resource >>> create convenient actions
+    Route::resource('photos', 'PhotoController'); create routes for convenient actions 
+    Verb	     URI	                Action	      Route Name
+    GET	      /photos	              index	        photos.index
+    GET	      /photos/create	      create	      photos.create
+    POST	    /photos	              store	        photos.store
+    GET	      /photos/{photo}	      show	        photos.show         // {photo} give us primary key id of photo model
+    GET	      /photos/{photo}/edit	edit	        photos.edit
+    PUT/PATCH	/photos/{photo}	      update	      photos.update
+    DELETE	  /photos/{photo}	      destroy	      photos.destroy
+    
+    // Specifying The Resource Model
+    php artisan make:controller PhotoController --resource --model=Photo >>> If you are using route model binding and would like
+    the resource controller's methods to type-hint a model instance, you may use the --model option when generating the controller:
+    
+ 5- Partial Resource Routes:
+ // Route::resource('', '')->only(['index', 'show']);
+ // Route::resource('', '')->except(['create', 'store', 'update', 'destroy']);
+ 
+ 5-1- API Resource Routes: Route::apiResource('photos', 'PhotoController');
+ // php artisan make:controller API/PhotoController --api
+ 
+ 5-2- Nested Resources: Route::resource('photos.comments', 'PhotoCommentController');
+ // This route will register a nested resource that may be accessed with URIs like the following:
+ // /photos/{photo}/comments/{comment}
+
+ 5-3- Shallow Nesting:
+ Often, it is not entirely necessary to have both the parent and the child IDs within a URI since the child ID is already
+ a unique identifier. When using unique identifier such as auto-incrementing primary keys to identify your models in URI 
+ segments, you may choose to use "shallow nesting":
+ 
+ // Route::resource('photos.comments', 'CommentController')->shallow();
+ The route definition above will define the following routes: (see documentation)
+ 
+ 5-4- Naming Resource Routes: By default, all resource controller actions have a route name; however, 
+ you can override these names by passing a names array with your options:
+ Route::resource('photos', 'PhotoController')->names(['create' => 'photos.build']);
+
+5-5- Naming Resource Route Parameters:
+// Route::resource('users', 'AdminUserController')->parameters(['users' => 'admin_user']);
+// /users/{admin_user}
+
+5-6- Localizing Resource URIs >>> create resource URIs using locale verbs.
+
+Supplementing Resource Controllers: If you need to add additional routes to a resource controller beyond the default set of
+resource routes, you should define those routes before your call to Route::resource;
+
+6- Route Caching: Closure based routes cannot be cached. To use route caching, you must convert any Closure routes to controller classes.
+
+
