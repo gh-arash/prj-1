@@ -1,0 +1,117 @@
+1- Accessing The Request:
+   // To obtain an instance of the current HTTP request via dependency injection, you should type-hint the Illuminate\Http\Request
+   class on your controller method. The incoming request instance will automatically be injected by the service container
+   
+2- Dependency Injection & Route Parameters:
+   // If your controller method is also expecting input from a route parameter you should list your route parameters after
+      your other dependencies.
+      
+ 3- Request Path & Method:
+ // The Illuminate\Http\Request instance provides a variety of methods for examining the HTTP request for your application
+    and extends the Symfony\Component\HttpFoundation\Request class. We will discuss a few of the most important methods below.
+    
+ 3-1- Retrieving The Request Path: The path method returns the request's path information.
+ // $uri = $request->path(); >>> if the incoming request is targeted at http://domain.com/foo/bar, the path method will return foo/bar:
+ // if ($request->is('admin/*')) {...} >>> The is method allows you to verify that the incoming request path matches a given pattern.
+    You may use the * character as a wildcard when utilizing this method
+    
+ 3-2- Retrieving The Request URL:To retrieve the full URL for the incoming request you may use the url or fullUrl methods.
+      The url method will return the URL without the query string, while the fullUrl method includes the query string
+      // Without Query String...  >>> $url = $request->url();
+      // With Query String...     >>>$url = $request->fullUrl();
+      
+ 3-3- Retrieving The Request Method: The method method will return the HTTP verb for the request. You may use the isMethod method to
+      verify that the HTTP verb matches a given string:
+      // $method = $request->method();
+      // if ($request->isMethod('post')) {...} 
+      
+  4- Input Trimming & Normalization:
+     // By default, Laravel includes the TrimStrings and ConvertEmptyStringsToNull middleware in your application's global
+        middleware stack. These middleware are listed in the stack by the App\Http\Kernel class. These middleware will automatically
+        trim all incoming string fields on the request, as well as convert any empty string fields to null. 
+        
+     // If you would like to disable this behavior, you may remove the two middleware from your application's middleware stack
+        by removing them from the $middleware property of your App\Http\Kernel class.   
+        
+  5- Retrieving Input
+  5-1- Retrieving All Input Data >>> $input = $request->all();
+  5-2- Retrieving An Input Value >>> $request->input('name');
+  // if the requested input value is not present on the request, You may pass a default value as the second argument to the input
+     method >>> $request->input('name', 'Sally');
+  5-3- to retrieve all of the input values as an associative array >>> $request->input();
+  5-4- When working with forms that contain array inputs, use "dot" notation to access the arrays
+       $name = $request->input('products.0.name');
+       $names = $request->input('products.*.name');
+   5-5- to retrieve  query string values  >>> $request->query(); (While the input method retrieves values from entire request payload
+        (including the query string)) >>> MORE DETAIL IN DOCUMENTATION
+   
+   5-6- Retrieving Input Via Dynamic Properties >>> $request->name; ( access the value of the field)
+   
+   5-7- Retrieving JSON Input Values: When sending JSON requests to your application, you may access the JSON data via the input
+        method as long as the Content-Type header of the request is properly set to application/json. You may even use "dot" syntax
+        to dig into JSON arrays
+        // $name = $request->input('user.name');
+   
+   5-8- Retrieving Boolean Input Values: When dealing with HTML elements like checkboxes, your application may receive "truthy" 
+        values that are actually strings.
+        // $request->boolean('archived');
+   5-9- Retrieving A Portion Of The Input Data            >>> $request->only(['', '']); --- $request->except(['']);
+  5-10- Determining If An Input Value Is Present          >>> if ($request->has('')) {...}
+  // When given an array, the has method will determine if all of the specified
+  //  values are present:                                                       >>> if ($request->has(['name', 'email'])) {...}
+  // The hasAny method returns true if any of the specified values are present: >>> if ($request->hasAny(['name', 'email'])) {...}
+  // to determine if a value is present on the request and is not empty         >>> if ($request->filled('name')) {...} 
+  
+  6- Old Input: Laravel allows you to keep input from one request during the next request. This feature is particularly useful
+     for re-populating forms after detecting validation errors.
+  // Flashing Input To The Session : flash the current input to the session so that it is available during the user's next request 
+     to the application >>> $request->flash();
+     // ALSO >>> $request->flashOnly(['username', 'email']); ---- $request->flashExcept('password');
+     // MORE OPTIONS IN DOCUMENTATION >>> Flashing Input Then Redirecting &&& Retrieving Old Input
+     
+  7- Cookies: 
+  7-1- Retrieving Cookies From Requests: 
+  To retrieve a cookie value from the request                              >>> $value = $request->cookie('name');
+  // Alternatively, you may use the Cookie facade to access cookie values: >>> $value = Cookie::get('name');
+  MORE OPTION FOR COOKIES IN DOCUMENTATION >>> Attaching Cookies To Responses &&& Generating Cookie Instances
+  
+  8- Files
+  ///  The file method returns an instance of the Illuminate\Http\UploadedFile class, which extends the PHP SplFileInfo class 
+       and provides a variety of methods for interacting with the file
+       
+  8-1- Retrieving Uploaded Files: You may access uploaded files from Request instance using the file method OR using dynamic properties.
+  // $file = $request->file('photo');
+  //$ file = $request->photo;
+  // determine if a file is present on the request >>> if ($request->hasFile('photo')) {...}
+  
+  8-2- Validating Successful Uploads: In addition to checking if the file is present, you may verify that there were no problems 
+       uploading the file via the isValid method:
+       // if ($request->file('photo')->isValid()) {...}
+     
+  8-3- File Paths & Extensions
+  // The UploadedFile class also contains methods for accessing the file's fully-qualified path and its extension. 
+     >>> $path = $request->photo->path();
+  // The extension method will attempt to guess the file's extension based on its contents.
+     This extension may be different from the extension that was supplied by the client
+     >>> $extension = $request->photo->extension();
+  
+  // Other File Methods >>>  API documentation for the UploadedFile 
+  
+  8-4- Storing Uploaded Files: To store an uploaded file, you will typically use one of your configured filesystems.
+       The UploadedFile class has a store method which will move an uploaded file to one of your disks, (may be a location on your
+       local filesystem or even a cloud storage location like Amazon S3)
+       // The store method accepts the path where the file should be stored relative to the filesystem's configured root directory. 
+          $path = $request->photo->store('images');
+       // The store method also accepts an optional second argument for the name of the disk that should be used to store the file.
+          $path = $request->photo->store('images', 's3');
+       //  to store a file with specific name >>> $request->photo->storeAs('images', 'filename.jpg', 's3');   
+       
+       
+       
+       
+       
+       
+       
+       
+       
+       
