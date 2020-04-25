@@ -1,0 +1,23 @@
+1- Determining If A View Exists: use the View facade. The exists method will return true if the view exists:
+   use Illuminate\Support\Facades\View;
+// if (View::exists('emails.customer')) {...}
+
+2- Creating The First Available View: Using the first method, you may create the first view that exists in a given array of views.
+   This is useful if your application or package allows views to be customized or overwritten >>> MORE DETAIL IN DOCUMENTION
+
+3- Sharing Data With All Views: using the view facade's share method. Typically, you should place calls to share within a service
+   provider's boot method. You are free to add them to the AppServiceProvider or generate a separate service provider
+   //  public function boot() {View::share('key', 'value');}
+   
+4- View Composer: View composers are callbacks or class methods that are called when a view is rendered. If you have data that you
+   want to be bound to a view each time that view is rendered, a view composer can help you organize that logic into a single location
+   >>> MORE DETAIL IN DOCUMENTATION
+
+5- Optimizing Views: By default, views are compiled on demand. When a request is executed that renders a view, Laravel will determine
+   if a compiled version of the view exists. If the file exists, Laravel will then determine if the uncompiled view has been modified
+   more recently than the compiled view. If the compiled view either does not exist, or the uncompiled view has been modified, Laravel
+   will recompile the view.
+   // Compiling views during the request negatively impacts performance, so Laravel provides the view:cache Artisan command to precompile
+      all of the views utilized by your application. For increased performance, you may wish to run this command as part of your
+      deployment process
+   // You may use the view:clear command to clear the view cache   
