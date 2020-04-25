@@ -1,0 +1,39 @@
+1- Generating Basic URLs: The generated URL will automatically use the scheme (HTTP or HTTPS) and host from the current request:
+   $post = App\Post::find(1);   echo url("/posts/{$post->id}");
+   // http://example.com/posts/1
+   
+2- Accessing The Current URL:
+   // Get the current URL without the query string...  >>> echo url()->current();
+   // Get the current URL including the query string...>>> echo url()->full();
+   // Get the full URL for the previous request...     >>> echo url()->previous();
+   // each of these methods may also be accessed via the URL facade: >>> echo URL::current();
+   
+3- URLs For Named Routes: The route helper may be used to generate URLs to named routes
+   // route('route's name',[parameters]);
+   You will often be generating URLs using the primary key of Eloquent models. For this reason, you may pass Eloquent models as parameter
+   values. The route helper will automatically extract the model's primary key
+   // Route::get('/post/{post}/comment/{comment}', function () {...})->name('comment.show');
+   >>> echo route('comment.show', ['post' => 1, 'comment' => 3]); >>>> // http://example.com/post/1/comment/3
+   
+4- Signed URLs: Laravel allows you to easily create "signed" URLs to named routes. These URLs have a "signature" hash appended 
+   to the query string which allows Laravel to verify that the URL has not been modified since it was created. Signed URLs are 
+   especially useful for routes that are publicly accessible yet need a layer of protection against URL manipulation. 
+   // MORE DETAIL IN DOCUMENTATION
+   
+ 5- URLs For Controller Actions: 
+    The action function generates a URL for the given controller action. You do not need to pass the full namespace of the controller.
+    Instead, pass the controller class name relative to the App\Http\Controllers namespace: 
+    // $url = action('HomeController@index');
+    
+ 6- Default Values: For some applications, you may wish to specify request-wide default values for certain URL parameters.
+    For example, imagine many of your routes define a {locale} parameter:   
+    // Route::get('/{locale}/posts', function () {...}) ->  name('post.index');
+    // It is cumbersome to always pass the locale every time you call the route helper. So, you may use the URL::defaults method
+       to define a default value for this parameter that will always be applied during the current request. You may wish to call
+       this method from a route middleware so that you have access to the current request
+    // MORE DETAIL IN DOCUMENTATION   
+    
+    
+    
+    
+    
