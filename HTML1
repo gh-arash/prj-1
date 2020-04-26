@@ -1,0 +1,17 @@
+HTML:a Markup Language for describing web documents ( یک زبان نشانه گذاری برای تضیح صفحات وب )
+
+- a simple html code has this tags:
+  <!DOCTYPE html>
+  <html>
+   <head>
+  <title> hello world </title>    // TITLE OF THE WEB PAGE
+  </head>
+  <body>                          // INSIDE THE WEB PAGE
+  my name is arash
+  <p> my name is arash </p>       // paragraph tag
+  <h1> اسم من</h1>               // heading tag (IT CAN BE DEVIDED IN 6 LEVEL: h1 to h6 becoming little
+  
+  </body> 
+  </html>
+  
+CSS: is a stylesheet language that describes the presentation of a html document. (CSS = Cascading Style Sheet)
